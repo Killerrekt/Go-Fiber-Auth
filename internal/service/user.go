@@ -50,8 +50,8 @@ func GetUser(email string) (model.User, error) {
 	return user, err
 }
 
-func ResetPassword(req request.ResetPassword) (response.Standard, error) {
-	err := db.DB.Model(&model.User{}).Where("email = ?", req.Email).Update("password", req.NewPassword).Error
+func ResetPassword(email string, req request.ResetPassword) (response.Standard, error) {
+	err := db.DB.Model(&model.User{}).Where("email = ?", email).Update("password", req.NewPassword).Error
 	if err != nil {
 		return response.Standard{Message: "Failed to update the password", Status: false}, err
 	}

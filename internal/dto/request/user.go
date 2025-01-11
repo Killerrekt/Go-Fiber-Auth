@@ -3,9 +3,9 @@ package request
 import "github.com/killerrekt/Go-Fiber-Auth/internal/model"
 
 type SignUp struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name     string `json:"name" validate:"required"`
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 func SignUpToUser(req SignUp) model.User {
@@ -17,11 +17,10 @@ func SignUpToUser(req SignUp) model.User {
 }
 
 type LogIn struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type ResetPassword struct {
-	Email       string `json:"email"`
-	NewPassword string `json:"new_password"`
+	NewPassword string `json:"new_password" validate:"required"`
 }

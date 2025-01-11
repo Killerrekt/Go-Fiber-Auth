@@ -9,9 +9,9 @@ import (
 func AuthRoute(app *fiber.App) {
 	auth := app.Group("/auth")
 
-	auth.Get("/get", middleware.AuthenticateAndAuthorize(), controller.Me)
+	auth.Get("/me", middleware.AuthenticateAndAuthorize(), controller.Me)
 
 	auth.Post("/sign-up", controller.SignUp)
 	auth.Post("/log-in", controller.LogIn)
-	auth.Post("/reset-password")
+	auth.Post("/reset-password", middleware.AuthenticateAndAuthorize(), controller.ResetPassword)
 }

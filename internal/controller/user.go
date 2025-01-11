@@ -4,7 +4,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/killerrekt/Go-Fiber-Auth/internal/dto/request"
 	"github.com/killerrekt/Go-Fiber-Auth/internal/dto/response"
+	"github.com/killerrekt/Go-Fiber-Auth/internal/model"
 	"github.com/killerrekt/Go-Fiber-Auth/internal/service"
+	"github.com/killerrekt/Go-Fiber-Auth/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -15,7 +17,9 @@ func SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response.Standard{Message: "Failed to parse the json", Status: false})
 	}
 
-	//*TODO Validation
+	if err := utils.Validate.Struct(req); err != nil {
+		return c.Status(fiber.StatusConflict).JSON(response.Standard{Message: "Missing some fields :-" + err.Error(), Status: false})
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -40,7 +44,9 @@ func LogIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response.Standard{Message: "Failed to parse the json", Status: false})
 	}
 
-	//*TODO Validation
+	if err := utils.Validate.Struct(req); err != nil {
+		return c.Status(fiber.StatusConflict).JSON(response.Standard{Message: "Missing some fields :-" + err.Error(), Status: false})
+	}
 
 	res, err := service.LogIn(req)
 
@@ -58,11 +64,15 @@ func Me(c *fiber.Ctx) error {
 func ResetPassword(c *fiber.Ctx) error {
 	var req request.ResetPassword
 
+	user := c.Locals("auth-user").(model.User)
+
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response.Standard{Message: "Failed to parse the json", Status: false})
 	}
 
-	//*TODO Validation
+	if err := utils.Validate.Struct(req); err != nil {
+		return c.Status(fiber.StatusConflict).JSON(response.Standard{Message: "Missing some fields :-" + err.Error(), Status: false})
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
@@ -70,7 +80,7 @@ func ResetPassword(c *fiber.Ctx) error {
 	}
 	req.NewPassword = string(hashedPassword)
 
-	res, err := service.ResetPassword(req)
+	res, err := service.ResetPassword(user.Email, req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(res)
 	}
