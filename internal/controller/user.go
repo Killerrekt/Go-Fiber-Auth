@@ -17,8 +17,8 @@ func SignUp(c *fiber.Ctx) error {
 
 	//*TODO Validation
 
-	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if errr != nil {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
 		return c.Status(fiber.StatusFailedDependency).JSON(response.Standard{Message: "Failed to hash the password", Status: false})
 	}
 
@@ -53,4 +53,27 @@ func LogIn(c *fiber.Ctx) error {
 
 func Me(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(response.Standard{Message: "The user details are as followed", Status: true, Data: c.Locals("auth-user")})
+}
+
+func ResetPassword(c *fiber.Ctx) error {
+	var req request.ResetPassword
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response.Standard{Message: "Failed to parse the json", Status: false})
+	}
+
+	//*TODO Validation
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return c.Status(fiber.StatusFailedDependency).JSON(response.Standard{Message: "Failed to hash the password", Status: false})
+	}
+	req.NewPassword = string(hashedPassword)
+
+	res, err := service.ResetPassword(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(res)
+	}
+
+	return c.Status(fiber.StatusAccepted).JSON(res)
 }

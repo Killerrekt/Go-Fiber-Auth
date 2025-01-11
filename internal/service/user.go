@@ -49,3 +49,12 @@ func GetUser(email string) (model.User, error) {
 	err := db.DB.Model(&model.User{}).Where("email = ?", email).First(&user).Error
 	return user, err
 }
+
+func ResetPassword(req request.ResetPassword) (response.Standard, error) {
+	err := db.DB.Model(&model.User{}).Where("email = ?", req.Email).Update("password", req.NewPassword).Error
+	if err != nil {
+		return response.Standard{Message: "Failed to update the password", Status: false}, err
+	}
+
+	return response.Standard{Message: "Successfully updated the password", Status: true}, nil
+}
