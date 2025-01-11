@@ -43,3 +43,9 @@ func LogIn(req request.LogIn) (response.Standard, error) {
 
 	return response.Standard{Message: "Successfully Logged In", Status: true, Data: token}, nil
 }
+
+func GetUser(email string) (model.User, error) {
+	var user model.User
+	err := db.DB.Model(&model.User{}).Where("email = ?", email).First(&user).Error
+	return user, err
+}

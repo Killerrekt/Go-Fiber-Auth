@@ -50,3 +50,7 @@ func LogIn(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusAccepted).JSON(res)
 }
+
+func Me(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusAccepted).JSON(response.Standard{Message: "The user details are as followed", Status: true, Data: c.Locals("auth-user")})
+}
