@@ -13,6 +13,7 @@ func main() {
 
 	utils.LoadConfig()
 	db.ConnectToDB()
+	db.RunMigration()
 
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendString("Pong")
