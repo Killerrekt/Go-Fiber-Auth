@@ -32,3 +32,21 @@ func SignUp(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusAccepted).JSON(res)
 }
+
+func LogIn(c *fiber.Ctx) error {
+	var req request.LogIn
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response.Standard{Message: "Failed to parse the json", Status: false})
+	}
+
+	//*TODO Validation
+
+	res, err := service.LogIn(req)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(res)
+	}
+
+	return c.Status(fiber.StatusAccepted).JSON(res)
+}
